@@ -1530,6 +1530,63 @@
         .close-arrow-btn {
             left: 4px !important;
         }
+
+        .ad-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: none;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .ad-overlay.visible {
+            display: block;
+        }
+
+        .ad-overlay-topbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            background: rgba(0, 0, 0, 0.82);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 14px;
+            letter-spacing: 0.4px;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .ad-overlay-brand {
+            font-weight: 700;
+        }
+
+        .ad-overlay-countdown {
+            min-width: 42px;
+            text-align: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            font-weight: 700;
+        }
+
+        .ad-frame {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #000;
+        }
+
         /* === FIN AJUSTE FINAL SOLICITADO === */
 
     </style>
@@ -1582,6 +1639,24 @@
     <div id="scrollLoading">Buscando imágenes...</div>
     <div class="load-more-indicator" id="loadMoreIndicator">Cargando más imágenes...</div>
     <div class="no-more-results" id="noMoreResults">No hay más imágenes para mostrar</div>
+
+    <div class="ad-overlay" id="adOverlay" aria-hidden="true">
+        <!-- El iframe queda con permisos ampliados; la página externa sigue controlando su propio JS/CSS. -->
+        <div class="ad-overlay-topbar">
+            <div class="ad-overlay-brand">Publicidad</div>
+            <div class="ad-overlay-countdown" id="adCountdown">20</div>
+        </div>
+        <iframe
+            id="adFrame"
+            class="ad-frame"
+            src="about:blank"
+            title="Anuncio"
+            loading="eager"
+            referrerpolicy="no-referrer"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation"
+            allow="autoplay; fullscreen; payment; clipboard-read; clipboard-write"
+        ></iframe>
+    </div>
 
     <div class="image-modal" id="imageModal">
         <div class="modal-content">
@@ -1742,6 +1817,18 @@
         let activeSearchId = null;
         let isAutoLoadEnabled = true;
         let currentTypeFilter = 'all'; 
+
+        const AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
+        const AD_EVERY_N_OPENS = 5;
+        const AD_DURATION_MS = 20000;
+        let imageOpenCount = Number(localStorage.getItem('clyra_image_open_count') || '0');
+        let pendingImageToOpen = null;
+        let adTimerId = null;
+        let adCountdownIntervalId = null;
+        let adSecondsLeft = 20;
+        const adOverlay = document.getElementById('adOverlay');
+        const adFrame = document.getElementById('adFrame');
+        const adCountdown = document.getElementById('adCountdown');
 
         // Variable para controlar la profundidad del historial del modal
         let modalHistoryDepth = 0;
@@ -2202,69 +2289,128 @@
             }
         }
 
-        function openImageModal(imageData, fromHistory = false) {
-            currentImageData = imageData;
-            modalMediaContainer.innerHTML = '';
-            
-            // Lógica de guardado en el historial
-            if (!fromHistory) {
-                modalHistoryDepth++;
-                history.pushState({ modalOpen: true, imageData: imageData, depth: modalHistoryDepth }, "");
-            } else {
-                modalHistoryDepth = history.state?.depth || 0;
-            }
-
-            const ext = imageData.imgUrl.split('.').pop().split('?')[0].toLowerCase();
-            const isVideo = ext === 'mp4' || ext === 'webm';
-
-            let mediaElement;
-            if (isVideo) {
-                mediaElement = document.createElement('video');
-                mediaElement.className = 'modal-video';
-                mediaElement.controls = true;
-                mediaElement.autoplay = true;
-                mediaElement.loop = true;
-                mediaElement.playsInline = true; 
-                mediaElement.src = imageData.imgUrl; 
-                
-                // Forzar reproducción por si el navegador la bloquea
-                setTimeout(() => {
-                    const playPromise = mediaElement.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(() => {
-                            // Si se bloquea por tener sonido, se silencia e inicia
-                            mediaElement.muted = true;
-                            mediaElement.play();
-                        });
-                    }
-                }, 50);
-
-            } else {
-                mediaElement = document.createElement('img');
-                mediaElement.className = 'modal-image';
-                mediaElement.src = imageData.imgUrl;
-            }
-            
-            modalMediaContainer.appendChild(mediaElement);
-            imageModal.style.display = 'block';
+        function openFullscreenAd(onFinished) {
+            pendingImageToOpen = typeof onFinished === 'function' ? onFinished : null;
+            adSecondsLeft = Math.ceil(AD_DURATION_MS / 1000);
+            adCountdown.textContent = String(adSecondsLeft);
+            adFrame.src = AD_URL;
+            adOverlay.classList.add('visible');
+            adOverlay.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
-            
-            translatingStatus.style.display = 'none';
-            translatedStatus.style.display = 'none';
-            
-            if (imageData.tags) {
-                displayTags(imageData.tags);
-                loadRelatedImages(imageData.tags); 
-                setTimeout(() => startAutoTranslation(), 500);
+
+            clearTimeout(adTimerId);
+            clearInterval(adCountdownIntervalId);
+
+            adCountdownIntervalId = setInterval(() => {
+                adSecondsLeft -= 1;
+                adCountdown.textContent = String(Math.max(0, adSecondsLeft));
+                if (adSecondsLeft <= 0) {
+                    clearInterval(adCountdownIntervalId);
+                }
+            }, 1000);
+
+            adTimerId = setTimeout(() => {
+                closeFullscreenAd();
+            }, AD_DURATION_MS);
+        }
+
+        function closeFullscreenAd() {
+            clearTimeout(adTimerId);
+            clearInterval(adCountdownIntervalId);
+            adTimerId = null;
+            adCountdownIntervalId = null;
+            adOverlay.classList.remove('visible');
+            adOverlay.setAttribute('aria-hidden', 'true');
+            adFrame.src = 'about:blank';
+
+            const nextAction = pendingImageToOpen;
+            pendingImageToOpen = null;
+
+            if (typeof nextAction === 'function') {
+                setTimeout(() => nextAction(), 50);
             } else {
-                displayTags('');
-                loadRelatedImages('');
+                document.body.style.overflow = 'auto';
             }
-            
-            imageModal.scrollTop = 0; 
+        }
+
+        function openImageModal(imageData, fromHistory = false) {
+            const openActualModal = () => {
+                currentImageData = imageData;
+                modalMediaContainer.innerHTML = '';
+
+                // Lógica de guardado en el historial
+                if (!fromHistory) {
+                    modalHistoryDepth++;
+                    history.pushState({ modalOpen: true, imageData: imageData, depth: modalHistoryDepth }, "");
+                } else {
+                    modalHistoryDepth = history.state?.depth || 0;
+                }
+
+                const ext = imageData.imgUrl.split('.').pop().split('?')[0].toLowerCase();
+                const isVideo = ext === 'mp4' || ext === 'webm';
+
+                let mediaElement;
+                if (isVideo) {
+                    mediaElement = document.createElement('video');
+                    mediaElement.className = 'modal-video';
+                    mediaElement.controls = true;
+                    mediaElement.autoplay = true;
+                    mediaElement.loop = true;
+                    mediaElement.playsInline = true; 
+                    mediaElement.src = imageData.imgUrl; 
+
+                    // Forzar reproducción por si el navegador la bloquea
+                    setTimeout(() => {
+                        const playPromise = mediaElement.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(() => {
+                                // Si se bloquea por tener sonido, se silencia e inicia
+                                mediaElement.muted = true;
+                                mediaElement.play();
+                            });
+                        }
+                    }, 50);
+
+                } else {
+                    mediaElement = document.createElement('img');
+                    mediaElement.className = 'modal-image';
+                    mediaElement.src = imageData.imgUrl;
+                }
+
+                modalMediaContainer.appendChild(mediaElement);
+                imageModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+                translatingStatus.style.display = 'none';
+                translatedStatus.style.display = 'none';
+
+                if (imageData.tags) {
+                    displayTags(imageData.tags);
+                    loadRelatedImages(imageData.tags); 
+                    setTimeout(() => startAutoTranslation(), 500);
+                } else {
+                    displayTags('');
+                    loadRelatedImages('');
+                }
+
+                imageModal.scrollTop = 0; 
+            };
+
+            if (!fromHistory) {
+                imageOpenCount += 1;
+                localStorage.setItem('clyra_image_open_count', String(imageOpenCount));
+
+                if (imageOpenCount % AD_EVERY_N_OPENS === 0) {
+                    openFullscreenAd(openActualModal);
+                    return;
+                }
+            }
+
+            openActualModal();
         }
 
         function closeImageModal(fromHistory = false) {
+
             if (imageModal.style.display !== 'block') return; 
 
             imageModal.style.display = 'none';
@@ -2282,6 +2428,14 @@
             translatingStatus.style.display = 'none';
             translatedStatus.style.display = 'none';
             relatedImagesGrid.innerHTML = ''; 
+
+            clearTimeout(adTimerId);
+            clearInterval(adCountdownIntervalId);
+            adTimerId = null;
+            adCountdownIntervalId = null;
+            adOverlay.classList.remove('visible');
+            adOverlay.setAttribute('aria-hidden', 'true');
+            adFrame.src = 'about:blank';
 
             // Manejo de retroceso masivo al cerrar totalmente
             if (!fromHistory && modalHistoryDepth > 0) {
@@ -2475,6 +2629,13 @@
             // Ir hacia atrás retrocede a la imagen anterior si es que hay historial
             history.back(); 
         });
+
+        adOverlay.addEventListener('click', (e) => {
+            if (e.target === adOverlay) {
+                // Sin cierre manual para conservar los 20 segundos completos.
+            }
+        });
+
         
         imageModal.addEventListener('click', (e) => { 
             // Clic fuera del contenido cierra todo el modal
