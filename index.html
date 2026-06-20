@@ -1532,177 +1532,9 @@
         }
         /* === FIN AJUSTE FINAL SOLICITADO === */
 
-    
-
-
-        /* ===== BLOQUE DE ANUNCIO PANTALLA COMPLETA ===== */
-        .ad-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 4000;
-            display: none;
-            flex-direction: column;
-            background: rgba(0, 0, 0, 0.99);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-        }
-
-        .ad-overlay.visible {
-            display: flex;
-        }
-
-        .ad-overlay-topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 14px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            background: rgba(10,10,10,0.9);
-            color: #fff;
-        }
-
-        .ad-overlay-brand {
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #d8d8d8;
-        }
-
-        .ad-overlay-countdown {
-            min-width: 42px;
-            text-align: center;
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 999px;
-            padding: 6px 12px;
-        }
-
-        .ad-frame {
-            width: 100%;
-            height: 100%;
-            flex: 1;
-            border: 0;
-            background: #000;
-        }
-        /* ===== FIN BLOQUE DE ANUNCIO PANTALLA COMPLETA ===== */
-
-        /* ===== AVISO DE DNS/BLOQUEADOR ===== */
-        .dns-block-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 3000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.96);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            padding: 18px;
-        }
-
-        .dns-block-overlay.visible {
-            display: flex;
-        }
-
-        .dns-block-card {
-            width: min(560px, 100%);
-            border-radius: 24px;
-            background: linear-gradient(180deg, rgba(18,18,18,0.98), rgba(10,10,10,0.98));
-            border: 1px solid rgba(255,255,255,0.09);
-            box-shadow: 0 24px 60px rgba(0,0,0,0.55);
-            padding: 24px 18px 18px;
-            text-align: center;
-            color: #fff;
-        }
-
-        .dns-block-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .dns-block-text {
-            font-size: 15px;
-            line-height: 1.55;
-            color: #d0d0d0;
-            margin-bottom: 16px;
-        }
-
-        .dns-block-warning {
-            display: inline-block;
-            font-size: 12px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #ffb3b3;
-            background: rgba(255, 77, 77, 0.12);
-            border: 1px solid rgba(255, 77, 77, 0.25);
-            border-radius: 999px;
-            padding: 8px 12px;
-            margin-bottom: 14px;
-        }
-
-        .dns-block-actions {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .dns-block-btn {
-            border: none;
-            border-radius: 999px;
-            padding: 12px 18px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.18s ease, opacity 0.18s ease, background-color 0.18s ease;
-        }
-
-        .dns-block-btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .dns-block-reload {
-            background: #fff;
-            color: #000;
-        }
-
-
-        .dns-block-spinner {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.10);
-            border-top-color: #fff;
-            margin: 0 auto 14px;
-            animation: dnsSpin 1s linear infinite;
-        }
-
-        @keyframes dnsSpin {
-            to { transform: rotate(360deg); }
-        }
-        /* ===== FIN AVISO DE DNS/BLOQUEADOR ===== */
-
     </style>
 </head>
 <body>
-
-    <div class="dns-block-overlay" id="dnsBlockOverlay" aria-hidden="true">
-        <div class="dns-block-card" role="dialog" aria-modal="true" aria-labelledby="dnsBlockTitle">
-            <div class="dns-block-spinner"></div>
-            <div class="dns-block-warning">Bloqueo detectado</div>
-            <div class="dns-block-title" id="dnsBlockTitle">Desactiva tu DNS privado o bloqueador</div>
-            <div class="dns-block-text">
-                La aplicación necesita acceder a los servicios de anuncios para continuar. Si tienes un DNS privado, filtro de red o bloqueador activo, desactívalo y vuelve a entrar.
-            </div>
-            <div class="dns-block-actions">
-                <button class="dns-block-btn dns-block-reload" id="dnsBlockReloadBtn">Ya lo desactivé, reiniciar</button>
-            </div>
-        </div>
-    </div>
-
     <canvas id="particleCanvas"></canvas>
 
     <div class="logo-bar">
@@ -1750,24 +1582,6 @@
     <div id="scrollLoading">Buscando imágenes...</div>
     <div class="load-more-indicator" id="loadMoreIndicator">Cargando más imágenes...</div>
     <div class="no-more-results" id="noMoreResults">No hay más imágenes para mostrar</div>
-
-
-    <div class="ad-overlay" id="adOverlay" aria-hidden="true">
-        <div class="ad-overlay-topbar">
-            <div class="ad-overlay-brand">Publicidad</div>
-            <div class="ad-overlay-countdown" id="adCountdown">20</div>
-        </div>
-        <iframe
-            id="adFrame"
-            class="ad-frame"
-            src="about:blank"
-            title="Anuncio"
-            loading="eager"
-            referrerpolicy="no-referrer"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation"
-            allow="autoplay; fullscreen; payment; clipboard-read; clipboard-write"
-        ></iframe>
-    </div>
 
     <div class="image-modal" id="imageModal">
         <div class="modal-content">
@@ -1929,20 +1743,6 @@
         let isAutoLoadEnabled = true;
         let currentTypeFilter = 'all'; 
 
-
-        const AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
-        const AD_EVERY_N_OPENS = 5;
-        const AD_DURATION_MS = 20000;
-        let imageOpenCount = Number(localStorage.getItem('clyra_image_open_count') || '0');
-        let pendingImageToOpen = null;
-        let adTimerId = null;
-        let adCountdownIntervalId = null;
-        let adSecondsLeft = 20;
-        const adOverlay = document.getElementById('adOverlay');
-        const adFrame = document.getElementById('adFrame');
-        const adCountdown = document.getElementById('adCountdown');
-
-
         // Variable para controlar la profundidad del historial del modal
         let modalHistoryDepth = 0;
 
@@ -1951,147 +1751,6 @@
         let isFetchingRelated = false;
         let endOfRelatedResults = false;
         let currentRelatedSearchTags = '';
-
-
-        const DNS_PROBE_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
-        const DNS_MONITOR_INTERVAL_MS = 5000;
-        const dnsBlockOverlay = document.getElementById('dnsBlockOverlay');
-        const dnsBlockReloadBtn = document.getElementById('dnsBlockReloadBtn');
-        let dnsCheckInProgress = false;
-        let dnsCheckPassed = false;
-        let dnsMonitorTimer = null;
-
-        function showDnsBlockOverlay() {
-            dnsBlockOverlay.classList.add('visible');
-            dnsBlockOverlay.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function hideDnsBlockOverlay() {
-            dnsBlockOverlay.classList.remove('visible');
-            dnsBlockOverlay.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = 'auto';
-        }
-
-        function reloadApplication() {
-            location.reload();
-        }
-
-        async function probeBlockedDomain(url, timeoutMs = 7000) {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), timeoutMs);
-            try {
-                await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-store',
-                    signal: controller.signal
-                });
-                return true;
-            } catch (error) {
-                return false;
-            } finally {
-                clearTimeout(timeout);
-            }
-        }
-
-        async function detectDnsOrBlocker({ fromMonitor = false } = {}) {
-            if (dnsCheckInProgress) return dnsCheckPassed;
-            dnsCheckInProgress = true;
-
-            try {
-                if (!navigator.onLine) {
-                    dnsCheckPassed = false;
-                    showDnsBlockOverlay();
-                    return false;
-                }
-
-                const adProbe = await probeBlockedDomain(DNS_PROBE_URL);
-                if (!adProbe) {
-                    dnsCheckPassed = false;
-                    showDnsBlockOverlay();
-                    return false;
-                }
-
-                const wasBlockedVisible = dnsBlockOverlay.classList.contains('visible');
-                dnsCheckPassed = true;
-                hideDnsBlockOverlay();
-
-                if (fromMonitor && wasBlockedVisible) {
-                    reloadApplication();
-                }
-
-                return true;
-            } finally {
-                dnsCheckInProgress = false;
-            }
-        }
-
-        function startDnsMonitoring() {
-            if (dnsMonitorTimer) return;
-
-            dnsMonitorTimer = setInterval(() => {
-                detectDnsOrBlocker({ fromMonitor: true });
-            }, DNS_MONITOR_INTERVAL_MS);
-
-            window.addEventListener('online', () => {
-                detectDnsOrBlocker({ fromMonitor: true });
-            });
-
-            window.addEventListener('offline', () => {
-                dnsCheckPassed = false;
-                showDnsBlockOverlay();
-            });
-
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    detectDnsOrBlocker({ fromMonitor: true });
-                }
-            });
-        }
-
-
-        function openFullscreenAd(onFinished) {
-            pendingImageToOpen = typeof onFinished === 'function' ? onFinished : null;
-            adSecondsLeft = Math.ceil(AD_DURATION_MS / 1000);
-            adCountdown.textContent = String(adSecondsLeft);
-            adFrame.src = AD_URL;
-            adOverlay.classList.add('visible');
-            adOverlay.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-
-            clearTimeout(adTimerId);
-            clearInterval(adCountdownIntervalId);
-
-            adCountdownIntervalId = setInterval(() => {
-                adSecondsLeft -= 1;
-                adCountdown.textContent = String(Math.max(0, adSecondsLeft));
-                if (adSecondsLeft <= 0) clearInterval(adCountdownIntervalId);
-            }, 1000);
-
-            adTimerId = setTimeout(() => {
-                closeFullscreenAd();
-            }, AD_DURATION_MS);
-        }
-
-        function closeFullscreenAd() {
-            clearTimeout(adTimerId);
-            clearInterval(adCountdownIntervalId);
-            adTimerId = null;
-            adCountdownIntervalId = null;
-            adOverlay.classList.remove('visible');
-            adOverlay.setAttribute('aria-hidden', 'true');
-            adFrame.src = 'about:blank';
-
-            const nextAction = pendingImageToOpen;
-            pendingImageToOpen = null;
-
-            if (typeof nextAction === 'function') {
-                setTimeout(() => nextAction(), 50);
-            } else {
-                document.body.style.overflow = 'auto';
-            }
-        }
 
         // --- FUNCIONES MASONRY JS ---
         function setupMasonryColumns() {
@@ -2544,85 +2203,68 @@
         }
 
         function openImageModal(imageData, fromHistory = false) {
-            if (!dnsCheckPassed) {
-                detectDnsOrBlocker();
-                return;
-            }
-
-            const openActualModal = () => {
-                currentImageData = imageData;
-                modalMediaContainer.innerHTML = '';
-
-                // Lógica de guardado en el historial
-                if (!fromHistory) {
-                    modalHistoryDepth++;
-                    history.pushState({ modalOpen: true, imageData: imageData, depth: modalHistoryDepth }, "");
-                } else {
-                    modalHistoryDepth = history.state?.depth || 0;
-                }
-
-                const ext = imageData.imgUrl.split('.').pop().split('?')[0].toLowerCase();
-                const isVideo = ext === 'mp4' || ext === 'webm';
-
-                let mediaElement;
-                if (isVideo) {
-                    mediaElement = document.createElement('video');
-                    mediaElement.className = 'modal-video';
-                    mediaElement.controls = true;
-                    mediaElement.autoplay = true;
-                    mediaElement.loop = true;
-                    mediaElement.playsInline = true;
-                    mediaElement.src = imageData.imgUrl;
-
-                    setTimeout(() => {
-                        const playPromise = mediaElement.play();
-                        if (playPromise !== undefined) {
-                            playPromise.catch(() => {
-                                mediaElement.muted = true;
-                                mediaElement.play();
-                            });
-                        }
-                    }, 50);
-                } else {
-                    mediaElement = document.createElement('img');
-                    mediaElement.className = 'modal-image';
-                    mediaElement.src = imageData.imgUrl;
-                }
-
-                modalMediaContainer.appendChild(mediaElement);
-                imageModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-
-                translatingStatus.style.display = 'none';
-                translatedStatus.style.display = 'none';
-
-                if (imageData.tags) {
-                    displayTags(imageData.tags);
-                    loadRelatedImages(imageData.tags);
-                    setTimeout(() => startAutoTranslation(), 500);
-                } else {
-                    displayTags('');
-                    loadRelatedImages('');
-                }
-
-                imageModal.scrollTop = 0;
-            };
-
+            currentImageData = imageData;
+            modalMediaContainer.innerHTML = '';
+            
+            // Lógica de guardado en el historial
             if (!fromHistory) {
-                imageOpenCount += 1;
-                localStorage.setItem('clyra_image_open_count', String(imageOpenCount));
-
-                if (imageOpenCount % AD_EVERY_N_OPENS === 0) {
-                    openFullscreenAd(openActualModal);
-                    return;
-                }
+                modalHistoryDepth++;
+                history.pushState({ modalOpen: true, imageData: imageData, depth: modalHistoryDepth }, "");
+            } else {
+                modalHistoryDepth = history.state?.depth || 0;
             }
 
-            openActualModal();
+            const ext = imageData.imgUrl.split('.').pop().split('?')[0].toLowerCase();
+            const isVideo = ext === 'mp4' || ext === 'webm';
+
+            let mediaElement;
+            if (isVideo) {
+                mediaElement = document.createElement('video');
+                mediaElement.className = 'modal-video';
+                mediaElement.controls = true;
+                mediaElement.autoplay = true;
+                mediaElement.loop = true;
+                mediaElement.playsInline = true; 
+                mediaElement.src = imageData.imgUrl; 
+                
+                // Forzar reproducción por si el navegador la bloquea
+                setTimeout(() => {
+                    const playPromise = mediaElement.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(() => {
+                            // Si se bloquea por tener sonido, se silencia e inicia
+                            mediaElement.muted = true;
+                            mediaElement.play();
+                        });
+                    }
+                }, 50);
+
+            } else {
+                mediaElement = document.createElement('img');
+                mediaElement.className = 'modal-image';
+                mediaElement.src = imageData.imgUrl;
+            }
+            
+            modalMediaContainer.appendChild(mediaElement);
+            imageModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            translatingStatus.style.display = 'none';
+            translatedStatus.style.display = 'none';
+            
+            if (imageData.tags) {
+                displayTags(imageData.tags);
+                loadRelatedImages(imageData.tags); 
+                setTimeout(() => startAutoTranslation(), 500);
+            } else {
+                displayTags('');
+                loadRelatedImages('');
+            }
+            
+            imageModal.scrollTop = 0; 
         }
 
         function closeImageModal(fromHistory = false) {
-
             if (imageModal.style.display !== 'block') return; 
 
             imageModal.style.display = 'none';
@@ -2630,14 +2272,6 @@
             currentImageData = null;
             currentImageTags = [];
             isTranslating = false;
-
-            clearTimeout(adTimerId);
-            clearInterval(adCountdownIntervalId);
-            adTimerId = null;
-            adCountdownIntervalId = null;
-            adOverlay.classList.remove('visible');
-            adOverlay.setAttribute('aria-hidden', 'true');
-            adFrame.src = 'about:blank';
             
             const video = modalMediaContainer.querySelector('video');
             if (video) {
@@ -2797,10 +2431,6 @@
         }
 
         async function startSearch(tags, isNewSearch = true) {
-            if (!dnsCheckPassed) {
-                const allowed = await detectDnsOrBlocker();
-                if (!allowed) return;
-            }
             if (isFetching) return;
             isFetching = true;
             scrollLoading.style.display = 'block';
@@ -2914,10 +2544,6 @@
             }, 200);
         });
 
-        window.addEventListener('online', async () => {
-            await detectDnsOrBlocker({ fromMonitor: true });
-        });
-
         let modalScrollTimeout;
         imageModal.addEventListener('scroll', () => {
             clearTimeout(modalScrollTimeout);
@@ -2931,7 +2557,7 @@
             }, 200);
         });
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             loadSavedTags();
             
             const savedAIFilter = localStorage.getItem('noxesphare_ai_filter');
@@ -2939,13 +2565,7 @@
                 aiFilterToggle.checked = true;
             }
 
-            dnsBlockReloadBtn.addEventListener('click', reloadApplication);
-            startDnsMonitoring();
-
-            const allowed = await detectDnsOrBlocker();
-            if (allowed) {
-                startSearch('');
-            }
+            startSearch(''); 
         });
     </script>
 </body>
