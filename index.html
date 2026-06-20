@@ -1591,7 +1591,6 @@
 
         .dns-block-actions {
             display: flex;
-            gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -1615,11 +1614,6 @@
             color: #000;
         }
 
-        .dns-block-secondary {
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.10);
-        }
 
         .dns-block-spinner {
             width: 46px;
@@ -1650,7 +1644,6 @@
             </div>
             <div class="dns-block-actions">
                 <button class="dns-block-btn dns-block-reload" id="dnsBlockReloadBtn">Ya lo desactivé, reiniciar</button>
-                <button class="dns-block-btn dns-block-secondary" id="dnsBlockCloseBtn">Cerrar aviso</button>
             </div>
         </div>
     </div>
@@ -1874,11 +1867,12 @@
 
 
         const DNS_PROBE_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
+        const DNS_MONITOR_INTERVAL_MS = 5000;
         const dnsBlockOverlay = document.getElementById('dnsBlockOverlay');
         const dnsBlockReloadBtn = document.getElementById('dnsBlockReloadBtn');
-        const dnsBlockCloseBtn = document.getElementById('dnsBlockCloseBtn');
         let dnsCheckInProgress = false;
         let dnsCheckPassed = false;
+        let dnsMonitorTimer = null;
 
         function showDnsBlockOverlay() {
             dnsBlockOverlay.classList.add('visible');
@@ -1914,27 +1908,59 @@
             }
         }
 
-        async function detectDnsOrBlocker() {
-            if (dnsCheckInProgress || dnsCheckPassed) return dnsCheckPassed;
+        async function detectDnsOrBlocker({ fromMonitor = false } = {}) {
+            if (dnsCheckInProgress) return dnsCheckPassed;
             dnsCheckInProgress = true;
 
-            if (!navigator.onLine) {
-                showDnsBlockOverlay();
-                dnsCheckInProgress = false;
-                return false;
-            }
+            try {
+                if (!navigator.onLine) {
+                    dnsCheckPassed = false;
+                    showDnsBlockOverlay();
+                    return false;
+                }
 
-            const adProbe = await probeBlockedDomain(DNS_PROBE_URL);
-            if (!adProbe) {
-                showDnsBlockOverlay();
-                dnsCheckInProgress = false;
-                return false;
-            }
+                const adProbe = await probeBlockedDomain(DNS_PROBE_URL);
+                if (!adProbe) {
+                    dnsCheckPassed = false;
+                    showDnsBlockOverlay();
+                    return false;
+                }
 
-            dnsCheckPassed = true;
-            hideDnsBlockOverlay();
-            dnsCheckInProgress = false;
-            return true;
+                const wasBlockedVisible = dnsBlockOverlay.classList.contains('visible');
+                dnsCheckPassed = true;
+                hideDnsBlockOverlay();
+
+                if (fromMonitor && wasBlockedVisible) {
+                    reloadApplication();
+                }
+
+                return true;
+            } finally {
+                dnsCheckInProgress = false;
+            }
+        }
+
+        function startDnsMonitoring() {
+            if (dnsMonitorTimer) return;
+
+            dnsMonitorTimer = setInterval(() => {
+                detectDnsOrBlocker({ fromMonitor: true });
+            }, DNS_MONITOR_INTERVAL_MS);
+
+            window.addEventListener('online', () => {
+                detectDnsOrBlocker({ fromMonitor: true });
+            });
+
+            window.addEventListener('offline', () => {
+                dnsCheckPassed = false;
+                showDnsBlockOverlay();
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    detectDnsOrBlocker({ fromMonitor: true });
+                }
+            });
         }
 
         // --- FUNCIONES MASONRY JS ---
@@ -2738,12 +2764,7 @@
         });
 
         window.addEventListener('online', async () => {
-            if (dnsBlockOverlay.classList.contains('visible')) {
-                await detectDnsOrBlocker();
-                if (dnsCheckPassed) {
-                    startSearch(searchInput.value.trim() || currentTags);
-                }
-            }
+            await detectDnsOrBlocker({ fromMonitor: true });
         });
 
         let modalScrollTimeout;
@@ -2768,7 +2789,7 @@
             }
 
             dnsBlockReloadBtn.addEventListener('click', reloadApplication);
-            dnsBlockCloseBtn.addEventListener('click', hideDnsBlockOverlay);
+            startDnsMonitoring();
 
             const allowed = await detectDnsOrBlocker();
             if (allowed) {
