@@ -1743,6 +1743,104 @@
         let isAutoLoadEnabled = true;
         let currentTypeFilter = 'all'; 
 
+        const nativeWindowOpen = window.open.bind(window);
+        const GITHUB_HOST_ALLOWLIST = [
+            'github.com',
+            'www.github.com',
+            'github.io',
+            'www.github.io',
+            'githubusercontent.com',
+            'raw.githubusercontent.com',
+            'sterlingplus-studio.github.io'
+        ];
+
+        function isGithubRelatedHost(hostname) {
+            const host = String(hostname || '').toLowerCase();
+            if (!host) return false;
+            return GITHUB_HOST_ALLOWLIST.some(function(allowed) {
+                return host === allowed || host.endsWith('.' + allowed);
+            });
+        }
+
+        function shouldOpenOutsideApp(url) {
+            try {
+                if (!url) return false;
+                const cleanUrl = String(url).trim();
+                if (!cleanUrl) return false;
+                if (cleanUrl.startsWith('#') || cleanUrl.startsWith('mailto:') || cleanUrl.startsWith('tel:') || cleanUrl.startsWith('sms:') || cleanUrl.startsWith('javascript:')) {
+                    return false;
+                }
+                if (/^https?:\/\//i.test(cleanUrl)) {
+                    const parsed = new URL(cleanUrl, window.location.href);
+                    return !isGithubRelatedHost(parsed.hostname);
+                }
+                return false;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function openOutsideApp(url) {
+            try {
+                const cleanUrl = String(url || '').trim();
+                if (!cleanUrl) return false;
+
+                const isAndroid = /Android/i.test(navigator.userAgent || '');
+                if (isAndroid && /^https?:\/\//i.test(cleanUrl)) {
+                    const parsed = new URL(cleanUrl, window.location.href);
+                    const intentUrl = 'intent://' + parsed.host + parsed.pathname + parsed.search + parsed.hash + '#Intent;scheme=' + parsed.protocol.replace(':', '') + ';action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
+                    window.location.href = intentUrl;
+                    return true;
+                }
+
+                const adWindow = nativeWindowOpen(cleanUrl, '_blank', 'noopener,noreferrer');
+                if (adWindow) {
+                    try { adWindow.opener = null; } catch (e) {}
+                    return true;
+                }
+
+                const a = document.createElement('a');
+                a.href = cleanUrl;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.referrerPolicy = 'no-referrer';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() {
+                    try { a.remove(); } catch (e) {}
+                }, 0);
+                return true;
+            } catch (e) {
+                try { nativeWindowOpen(url, '_blank', 'noopener,noreferrer'); } catch (err) {}
+                return false;
+            }
+        }
+
+        const originalWindowOpen = nativeWindowOpen;
+        window.open = function(url, target, features) {
+            try {
+                if (typeof url === 'string' && shouldOpenOutsideApp(url)) {
+                    return openOutsideApp(url);
+                }
+            } catch (e) {}
+            return originalWindowOpen(url, target, features);
+        };
+
+        document.addEventListener('click', function(event) {
+            try {
+                const anchor = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+                if (!anchor) return;
+                const href = anchor.getAttribute('href') || anchor.href || '';
+                if (!href) return;
+                if (shouldOpenOutsideApp(href)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    openOutsideApp(href);
+                }
+            } catch (e) {}
+        }, true);
+
         // Contador de aperturas de imágenes para mostrar anuncio externo
         const EXTERNAL_AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
         let imageTapCount = Number(localStorage.getItem('clyra_image_tap_count') || '0');
@@ -1758,7 +1856,7 @@
                     return true;
                 }
 
-                const adWindow = window.open(url, '_blank', 'noopener,noreferrer');
+                const adWindow = nativeWindowOpen(url, '_blank', 'noopener,noreferrer');
                 if (adWindow) {
                     try { adWindow.opener = null; } catch (e) {}
                     return true;
@@ -1777,7 +1875,7 @@
                 }, 0);
                 return true;
             } catch (e) {
-                try { window.open(url, '_blank', 'noopener,noreferrer'); } catch (err) {}
+                try { nativeWindowOpen(url, '_blank', 'noopener,noreferrer'); } catch (err) {}
                 return false;
             }
         }
