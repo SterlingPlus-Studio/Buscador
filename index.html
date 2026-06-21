@@ -1743,6 +1743,22 @@
         let isAutoLoadEnabled = true;
         let currentTypeFilter = 'all'; 
 
+        // Contador de aperturas de imágenes para mostrar anuncio externo
+        const EXTERNAL_AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
+        let imageTapCount = Number(localStorage.getItem('clyra_image_tap_count') || '0');
+
+        function registerImageTapAndMaybeOpenAd() {
+            imageTapCount = (imageTapCount + 1) % 5;
+            localStorage.setItem('clyra_image_tap_count', String(imageTapCount));
+
+            if (imageTapCount === 0) {
+                const adWindow = window.open(EXTERNAL_AD_URL, '_blank', 'noopener,noreferrer');
+                if (adWindow) {
+                    try { adWindow.opener = null; } catch (e) {}
+                }
+            }
+        }
+
         // Variable para controlar la profundidad del historial del modal
         let modalHistoryDepth = 0;
 
@@ -1751,10 +1767,6 @@
         let isFetchingRelated = false;
         let endOfRelatedResults = false;
         let currentRelatedSearchTags = '';
-
-        // Variables para el contador de anuncios
-        let imagesOpenedCount = 0;
-        const adsterraUrl = "https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e";
 
         // --- FUNCIONES MASONRY JS ---
         function setupMasonryColumns() {
@@ -2050,6 +2062,7 @@
                 };
                 
                 card.addEventListener('click', () => {
+                    registerImageTapAndMaybeOpenAd();
                     const imageData = { imgUrl: fileUrl, tags: post.tags || '' };
                     openImageModal(imageData); 
                 });
@@ -2207,16 +2220,6 @@
         }
 
         function openImageModal(imageData, fromHistory = false) {
-            // --- LÓGICA DE ANUNCIOS ADSTERRA ---
-            // Solo aumentamos el contador si es una imagen nueva, no por navegar atrás en el historial
-            if (!fromHistory) {
-                imagesOpenedCount++;
-                if (imagesOpenedCount % 5 === 0) {
-                    window.open(adsterraUrl, '_blank');
-                }
-            }
-            // -----------------------------------
-
             currentImageData = imageData;
             modalMediaContainer.innerHTML = '';
             
@@ -2417,6 +2420,7 @@
                 };
                 
                 card.addEventListener('click', () => {
+                    registerImageTapAndMaybeOpenAd();
                     const imageData = {
                         imgUrl: fileUrl, 
                         tags: post.tags || ''
