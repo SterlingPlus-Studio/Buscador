@@ -1747,15 +1747,47 @@
         const EXTERNAL_AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
         let imageTapCount = Number(localStorage.getItem('clyra_image_tap_count') || '0');
 
+        function openUrlOutsideApp(url) {
+            try {
+                const isAndroid = /Android/i.test(navigator.userAgent || '');
+                if (isAndroid) {
+                    const cleanUrl = String(url || '').trim();
+                    if (!cleanUrl) return false;
+                    const intentUrl = 'intent://' + cleanUrl.replace(/^https?:\/\//i, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
+                    window.location.href = intentUrl;
+                    return true;
+                }
+
+                const adWindow = window.open(url, '_blank', 'noopener,noreferrer');
+                if (adWindow) {
+                    try { adWindow.opener = null; } catch (e) {}
+                    return true;
+                }
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.referrerPolicy = 'no-referrer';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() {
+                    try { a.remove(); } catch (e) {}
+                }, 0);
+                return true;
+            } catch (e) {
+                try { window.open(url, '_blank', 'noopener,noreferrer'); } catch (err) {}
+                return false;
+            }
+        }
+
         function registerImageTapAndMaybeOpenAd() {
             imageTapCount = (imageTapCount + 1) % 5;
             localStorage.setItem('clyra_image_tap_count', String(imageTapCount));
 
             if (imageTapCount === 0) {
-                const adWindow = window.open(EXTERNAL_AD_URL, '_blank', 'noopener,noreferrer');
-                if (adWindow) {
-                    try { adWindow.opener = null; } catch (e) {}
-                }
+                openUrlOutsideApp(EXTERNAL_AD_URL);
             }
         }
 
