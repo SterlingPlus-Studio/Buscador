@@ -1743,149 +1743,44 @@
         let isAutoLoadEnabled = true;
         let currentTypeFilter = 'all'; 
 
-        const nativeWindowOpen = window.open.bind(window);
-        const GITHUB_HOST_ALLOWLIST = [
-            'github.com',
-            'www.github.com',
-            'github.io',
-            'www.github.io',
-            'githubusercontent.com',
-            'raw.githubusercontent.com',
-            'sterlingplus-studio.github.io'
-        ];
+        // --- SISTEMA DE ANUNCIOS EXTERNOS ---
+        const ADSTERRA_AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
+        const AD_TRIGGER_OPEN_COUNT = 5;
+        const AD_COUNTER_STORAGE_KEY = 'clyra_ad_image_open_count';
 
-        function isGithubRelatedHost(hostname) {
-            const host = String(hostname || '').toLowerCase();
-            if (!host) return false;
-            return GITHUB_HOST_ALLOWLIST.some(function(allowed) {
-                return host === allowed || host.endsWith('.' + allowed);
-            });
+        let imageOpenCounter = 0;
+        try {
+            imageOpenCounter = parseInt(localStorage.getItem(AD_COUNTER_STORAGE_KEY) || '0', 10);
+            if (Number.isNaN(imageOpenCounter) || imageOpenCounter < 0) imageOpenCounter = 0;
+        } catch (e) {
+            imageOpenCounter = 0;
         }
 
-        function shouldOpenOutsideApp(url) {
+        function openExternalAd() {
             try {
-                if (!url) return false;
-                const cleanUrl = String(url).trim();
-                if (!cleanUrl) return false;
-                if (cleanUrl.startsWith('#') || cleanUrl.startsWith('mailto:') || cleanUrl.startsWith('tel:') || cleanUrl.startsWith('sms:') || cleanUrl.startsWith('javascript:')) {
-                    return false;
-                }
-                if (/^https?:\/\//i.test(cleanUrl)) {
-                    const parsed = new URL(cleanUrl, window.location.href);
-                    return !isGithubRelatedHost(parsed.hostname);
-                }
-                return false;
-            } catch (e) {
-                return false;
+                const adWindow = window.open(ADSTERRA_AD_URL, '_blank', 'noopener,noreferrer');
+                if (adWindow) adWindow.opener = null;
+            } catch (error) {
+                // Fallback por si el navegador bloquea la apertura en nueva pestaña
+                window.location.href = ADSTERRA_AD_URL;
             }
         }
 
-        function openOutsideApp(url) {
+        function registerImageOpenForAd(isVideo) {
+            // Solo cuenta imágenes/GIFs; no cuenta vídeos
+            if (isVideo) return;
+
+            imageOpenCounter += 1;
             try {
-                const cleanUrl = String(url || '').trim();
-                if (!cleanUrl) return false;
-
-                const isAndroid = /Android/i.test(navigator.userAgent || '');
-                if (isAndroid && /^https?:\/\//i.test(cleanUrl)) {
-                    const parsed = new URL(cleanUrl, window.location.href);
-                    const intentUrl = 'intent://' + parsed.host + parsed.pathname + parsed.search + parsed.hash + '#Intent;scheme=' + parsed.protocol.replace(':', '') + ';action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
-                    window.location.href = intentUrl;
-                    return true;
-                }
-
-                const adWindow = nativeWindowOpen(cleanUrl, '_blank', 'noopener,noreferrer');
-                if (adWindow) {
-                    try { adWindow.opener = null; } catch (e) {}
-                    return true;
-                }
-
-                const a = document.createElement('a');
-                a.href = cleanUrl;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                a.referrerPolicy = 'no-referrer';
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(function() {
-                    try { a.remove(); } catch (e) {}
-                }, 0);
-                return true;
-            } catch (e) {
-                try { nativeWindowOpen(url, '_blank', 'noopener,noreferrer'); } catch (err) {}
-                return false;
-            }
-        }
-
-        const originalWindowOpen = nativeWindowOpen;
-        window.open = function(url, target, features) {
-            try {
-                if (typeof url === 'string' && shouldOpenOutsideApp(url)) {
-                    return openOutsideApp(url);
-                }
+                localStorage.setItem(AD_COUNTER_STORAGE_KEY, String(imageOpenCounter));
             } catch (e) {}
-            return originalWindowOpen(url, target, features);
-        };
 
-        document.addEventListener('click', function(event) {
-            try {
-                const anchor = event.target && event.target.closest ? event.target.closest('a[href]') : null;
-                if (!anchor) return;
-                const href = anchor.getAttribute('href') || anchor.href || '';
-                if (!href) return;
-                if (shouldOpenOutsideApp(href)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    openOutsideApp(href);
-                }
-            } catch (e) {}
-        }, true);
-
-        // Contador de aperturas de imágenes para mostrar anuncio externo
-        const EXTERNAL_AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
-        let imageTapCount = Number(localStorage.getItem('clyra_image_tap_count') || '0');
-
-        function openUrlOutsideApp(url) {
-            try {
-                const isAndroid = /Android/i.test(navigator.userAgent || '');
-                if (isAndroid) {
-                    const cleanUrl = String(url || '').trim();
-                    if (!cleanUrl) return false;
-                    const intentUrl = 'intent://' + cleanUrl.replace(/^https?:\/\//i, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
-                    window.location.href = intentUrl;
-                    return true;
-                }
-
-                const adWindow = nativeWindowOpen(url, '_blank', 'noopener,noreferrer');
-                if (adWindow) {
-                    try { adWindow.opener = null; } catch (e) {}
-                    return true;
-                }
-
-                const a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                a.referrerPolicy = 'no-referrer';
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(function() {
-                    try { a.remove(); } catch (e) {}
-                }, 0);
-                return true;
-            } catch (e) {
-                try { nativeWindowOpen(url, '_blank', 'noopener,noreferrer'); } catch (err) {}
-                return false;
-            }
-        }
-
-        function registerImageTapAndMaybeOpenAd() {
-            imageTapCount = (imageTapCount + 1) % 5;
-            localStorage.setItem('clyra_image_tap_count', String(imageTapCount));
-
-            if (imageTapCount === 0) {
-                openUrlOutsideApp(EXTERNAL_AD_URL);
+            if (imageOpenCounter >= AD_TRIGGER_OPEN_COUNT) {
+                imageOpenCounter = 0;
+                try {
+                    localStorage.setItem(AD_COUNTER_STORAGE_KEY, '0');
+                } catch (e) {}
+                openExternalAd();
             }
         }
 
@@ -2192,7 +2087,6 @@
                 };
                 
                 card.addEventListener('click', () => {
-                    registerImageTapAndMaybeOpenAd();
                     const imageData = { imgUrl: fileUrl, tags: post.tags || '' };
                     openImageModal(imageData); 
                 });
@@ -2363,6 +2257,11 @@
 
             const ext = imageData.imgUrl.split('.').pop().split('?')[0].toLowerCase();
             const isVideo = ext === 'mp4' || ext === 'webm';
+
+            // Dispara anuncio externo cada 5 aperturas de imágenes/GIFs
+            if (!fromHistory) {
+                registerImageOpenForAd(isVideo);
+            }
 
             let mediaElement;
             if (isVideo) {
@@ -2550,7 +2449,6 @@
                 };
                 
                 card.addEventListener('click', () => {
-                    registerImageTapAndMaybeOpenAd();
                     const imageData = {
                         imgUrl: fileUrl, 
                         tags: post.tags || ''
