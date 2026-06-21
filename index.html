@@ -1706,42 +1706,6 @@
 
         const TRANSLATE_API = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=";
         
-        const AD_URL = "https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e";
-        const AD_OPEN_EVERY = 5;
-        const AD_STORAGE_KEY = 'clyra_ad_open_count_images';
-
-        function openAdOutsideApp(url) {
-            try {
-                const a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            } catch (e) {
-                try {
-                    window.open(url, '_blank', 'noopener,noreferrer');
-                } catch (err) {}
-            }
-        }
-
-        function triggerAdAfterCount() {
-            let count = 0;
-            try {
-                count = parseInt(localStorage.getItem(AD_STORAGE_KEY) || '0', 10) || 0;
-            } catch (e) {
-                count = 0;
-            }
-            count += 1;
-            try {
-                localStorage.setItem(AD_STORAGE_KEY, String(count));
-            } catch (e) {}
-            if (count % AD_OPEN_EVERY === 0) {
-                setTimeout(() => openAdOutsideApp(AD_URL), 600);
-            }
-        }
-
         const searchInput = document.getElementById('searchInput');
         const resultsContainer = document.getElementById('resultsContainer');
         const scrollLoading = document.getElementById('scrollLoading');
@@ -1787,6 +1751,10 @@
         let isFetchingRelated = false;
         let endOfRelatedResults = false;
         let currentRelatedSearchTags = '';
+
+        // Variables para el contador de anuncios
+        let imagesOpenedCount = 0;
+        const adsterraUrl = "https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e";
 
         // --- FUNCIONES MASONRY JS ---
         function setupMasonryColumns() {
@@ -2239,8 +2207,17 @@
         }
 
         function openImageModal(imageData, fromHistory = false) {
+            // --- LÓGICA DE ANUNCIOS ADSTERRA ---
+            // Solo aumentamos el contador si es una imagen nueva, no por navegar atrás en el historial
+            if (!fromHistory) {
+                imagesOpenedCount++;
+                if (imagesOpenedCount % 5 === 0) {
+                    window.open(adsterraUrl, '_blank');
+                }
+            }
+            // -----------------------------------
+
             currentImageData = imageData;
-            if (!fromHistory) triggerAdAfterCount();
             modalMediaContainer.innerHTML = '';
             
             // Lógica de guardado en el historial
