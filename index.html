@@ -15,22 +15,15 @@
         /* Importar fuente personalizada local */
         @font-face {
             font-family: 'CustomFont';
-            src:
-                local('fuente'),
-                local('Fuente'),
-                url('Fuente/fuente.ttf') format('truetype');
+            src: url('Fuente/Champagne y limusinas Bold.ttf') format('truetype');
             font-display: swap;
         }
         
-        html, body, button, input, textarea, select {
-            font-family: 'CustomFont', 'Segoe UI', Arial, sans-serif;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: inherit;
+            font-family: 'CustomFont', 'Segoe UI', Arial, sans-serif;
             -webkit-tap-highlight-color: transparent !important;
         }
         
@@ -828,7 +821,7 @@
         }
 
         .search-filters-panel {
-            top: var(--search-panel-top, 64px);
+            top: 64px;
             background: rgba(8, 8, 8, 0.92);
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
@@ -1518,151 +1511,6 @@
         /* ===== FIN REDISEÑO MODAL ===== */
 
 
-
-
-        /* === AJUSTE ESCRITORIO: MENÚ LATERAL FIJO Y MODAL LATERAL === */
-        @media (min-width: 1100px) {
-            :root {
-                --sidebar-width: 390px;
-            }
-
-            body.sidebar-open {
-                overflow-x: hidden;
-            }
-
-            body.sidebar-open .search-toggle-btn {
-                display: none !important;
-            }
-
-            body.sidebar-open .logo-bar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: var(--sidebar-width);
-                height: auto;
-                min-height: 96px;
-                z-index: 1002;
-                flex-direction: column;
-                align-items: stretch;
-                justify-content: flex-start;
-                gap: 10px;
-                padding: 18px 16px 14px;
-                border-right: 1px solid rgba(255, 255, 255, 0.06);
-            }
-
-            body.sidebar-open .logo-text {
-                font-size: 24px;
-                line-height: 1.05;
-            }
-
-            body.sidebar-open .search-filters-panel {
-                left: 0;
-                top: 96px;
-                width: var(--sidebar-width);
-                height: calc(100vh - 96px);
-                max-height: none !important;
-                opacity: 1;
-                visibility: visible;
-                overflow-y: auto;
-                transform: none !important;
-                border-radius: 0;
-                border-right: 1px solid rgba(255, 255, 255, 0.06);
-                border-bottom: none;
-            }
-
-            body.sidebar-open .search-filters-panel.visible {
-                max-height: none !important;
-            }
-
-            body.sidebar-open .results-wrapper {
-                margin-left: var(--sidebar-width);
-                width: calc(100% - var(--sidebar-width));
-                max-width: calc(100% - var(--sidebar-width));
-                padding-left: 18px;
-                padding-right: 18px;
-            }
-
-            .modal-content {
-                width: min(1600px, calc(100% - 30px));
-                display: grid;
-                grid-template-columns: minmax(0, 1.55fr) minmax(340px, 420px);
-                grid-template-areas: "media side";
-                gap: 18px 20px;
-                align-items: start;
-                padding: 76px 0 32px 0;
-            }
-
-            .modal-desktop-media {
-                grid-area: media;
-                position: sticky;
-                top: 14px;
-                align-self: start;
-                min-width: 0;
-            }
-
-            .modal-desktop-sidebar {
-                grid-area: side;
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-                min-width: 0;
-                position: sticky;
-                top: 14px;
-                max-height: calc(100vh - 44px);
-                overflow: auto;
-                padding-right: 4px;
-            }
-
-            .modal-image-container {
-                margin-bottom: 0;
-                max-height: none;
-            }
-
-            .modal-image,
-            .modal-video {
-                width: 100%;
-                max-height: calc(100vh - 150px);
-                border-radius: 18px;
-            }
-
-            .tags-section,
-            .related-images-section {
-                max-width: none;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-
-            .related-images-section {
-                margin-top: 0;
-            }
-
-            .tags-box,
-            .related-images-section .image-card {
-                border-radius: 18px;
-            }
-        }
-
-        @media (min-width: 1600px) {
-            body.sidebar-open .logo-text {
-                font-size: 26px;
-            }
-
-            body.sidebar-open .search-filters-panel {
-                width: 410px;
-            }
-
-            body.sidebar-open .logo-bar {
-                width: 410px;
-            }
-
-            body.sidebar-open .results-wrapper {
-                margin-left: 410px;
-                width: calc(100% - 410px);
-                max-width: calc(100% - 410px);
-            }
-        }
-        /* === FIN AJUSTE ESCRITORIO: MENÚ LATERAL FIJO Y MODAL LATERAL === */
         /* === AJUSTE FINAL SOLICITADO === */
         body {
             background: #000 !important;
@@ -1682,360 +1530,7 @@
         .close-arrow-btn {
             left: 4px !important;
         }
-
-        /* === RESPONSIVE WINDOWS / ESCRITORIO === */
-        html {
-            scrollbar-gutter: stable both-edges;
-        }
-
-        :root {
-            --content-max-width: 1840px;
-            --content-padding: clamp(10px, 1.6vw, 24px);
-            --content-gap: clamp(10px, 1.1vw, 16px);
-            --panel-width: min(100vw, 1200px);
-        }
-
-        .logo-bar {
-            min-height: 58px;
-        }
-
-        .logo-text {
-            line-height: 1;
-            word-break: break-word;
-        }
-
-        .search-filters-panel {
-            width: 100%;
-            top: var(--search-panel-top, 64px);
-        }
-
-        .search-filters-content {
-            width: min(100%, var(--panel-width));
-            margin: 0 auto;
-        }
-
-        .search-box-container,
-        .tags-section,
-        .related-images-section {
-            min-width: 0;
-        }
-
-        .results-wrapper {
-            width: min(var(--content-max-width), 100%);
-            padding: clamp(12px, 1.4vw, 24px) clamp(10px, 1.2vw, 22px) clamp(20px, 1.8vw, 32px);
-            gap: var(--content-gap);
-        }
-
-        .masonry-column,
-        .related-masonry-column {
-            min-width: 0;
-            gap: var(--content-gap);
-        }
-
-        .image-card {
-            min-width: 0;
-        }
-
-        .modal-content {
-            width: min(1180px, calc(100vw - 24px));
-            max-width: 1180px;
-        }
-
-        .modal-image,
-        .modal-video {
-            max-width: 100%;
-            width: 100%;
-        }
-
-        .tags-box {
-            width: 100%;
-        }
-
-        .tags-list {
-            min-height: 0;
-        }
-
-        .search-options {
-            row-gap: 8px;
-        }
-
-        .option {
-            max-width: 100%;
-        }
-
-        .type-filters {
-            flex-wrap: wrap;
-        }
-
-        .type-btn {
-            min-width: 92px;
-        }
-
-        @media (min-width: 1280px) {
-            .results-wrapper { gap: 16px; }
-            .logo-text { font-size: 30px; }
-            .search-box { font-size: 16px; }
-        }
-
-        @media (min-width: 1600px) {
-            .results-wrapper { width: min(92vw, var(--content-max-width)); }
-            .modal-content { width: min(1260px, calc(100vw - 48px)); }
-            .logo-bar { padding-left: 22px; padding-right: 22px; }
-        }
-
-        @media (min-width: 2000px) {
-            .results-wrapper { width: min(88vw, 1880px); }
-        }
-        /* === FIN RESPONSIVE WINDOWS / ESCRITORIO === */
-
-        html, body {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        html::-webkit-scrollbar,
-        body::-webkit-scrollbar {
-            width: 0;
-            height: 0;
-            display: none;
-        }
-
-        .image-modal,
-        .modal-desktop-sidebar,
-        .search-filters-panel {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .image-modal::-webkit-scrollbar,
-        .modal-desktop-sidebar::-webkit-scrollbar,
-        .search-filters-panel::-webkit-scrollbar {
-            width: 0;
-            height: 0;
-            display: none;
-        }
-
-        body.modal-open {
-            overflow: hidden !important;
-        }
-
-        body.modal-open .logo-bar,
-        body.modal-open .search-filters-panel {
-            display: none !important;
-        }
-
-        .image-modal {
-            z-index: 9999;
-            overscroll-behavior: contain;
-        }
-
-
         /* === FIN AJUSTE FINAL SOLICITADO === */
-
-    
-
-        /* === AJUSTES WINDOWS / MÓVIL PEDIDOS === */
-        :root {
-            --sidebar-width: 360px;
-            --sidebar-gap: 18px;
-        }
-
-        @media (max-width: 1099px) {
-            .search-filters-panel {
-                left: 0;
-                top: var(--search-panel-top, 64px);
-                width: 100%;
-                height: auto;
-                max-height: 0;
-                transform: none;
-                border-radius: 0;
-            }
-
-            .search-filters-panel.visible {
-                max-height: 620px;
-            }
-
-            body.sidebar-open .results-wrapper {
-                margin-left: 0;
-                max-width: 100%;
-                width: auto;
-            }
-        }
-
-        @media (min-width: 1100px) {
-            body.sidebar-open .logo-bar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: var(--sidebar-width);
-                min-height: var(--search-panel-top, 64px);
-                height: auto;
-                z-index: 1002;
-                flex-direction: column;
-                align-items: stretch;
-                justify-content: flex-start;
-                gap: 12px;
-                padding: 18px 16px 14px;
-            }
-
-            body.sidebar-open .logo-text {
-                font-size: 26px;
-                line-height: 1.06;
-                letter-spacing: 0.4px;
-            }
-
-            body.sidebar-open .search-toggle-btn {
-                align-self: flex-end;
-            }
-
-            .search-filters-panel {
-                left: 0;
-                top: var(--search-panel-top, 64px);
-                width: min(var(--sidebar-width), 92vw);
-                height: calc(100vh - var(--search-panel-top, 64px));
-                max-height: none !important;
-                opacity: 0;
-                visibility: hidden;
-                overflow-y: auto;
-                transform: translateX(calc(-100% - 14px));
-                border-radius: 0 24px 24px 0;
-                border-right: 1px solid rgba(255, 255, 255, 0.06);
-                box-shadow: 18px 0 40px rgba(0, 0, 0, 0.42);
-                transition: transform 0.28s ease, opacity 0.22s ease, visibility 0.22s ease;
-            }
-
-            .search-filters-panel.visible {
-                max-height: none !important;
-                transform: translateX(0);
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .search-filters-content {
-                padding: 16px 14px 18px;
-            }
-
-            body.sidebar-open .results-wrapper {
-                margin-left: calc(var(--sidebar-width) + var(--sidebar-gap));
-                margin-right: 14px;
-                max-width: none;
-                width: calc(100vw - var(--sidebar-width) - (var(--sidebar-gap) * 2) - 14px);
-            }
-
-            .results-wrapper {
-                max-width: none;
-                width: auto;
-                transition: margin-left 0.28s ease, width 0.28s ease;
-                gap: 10px;
-            }
-
-            .masonry-column,
-            .related-masonry-column {
-                gap: 10px;
-            }
-
-            .image-card {
-                border-radius: 10px;
-            }
-        }
-
-        @media (min-width: 1400px) {
-            :root {
-                --sidebar-width: 390px;
-            }
-
-            body.sidebar-open .logo-text {
-                font-size: 28px;
-            }
-
-            .results-wrapper {
-                padding-left: 18px;
-                padding-right: 18px;
-                gap: 9px;
-            }
-
-            .masonry-column,
-            .related-masonry-column {
-                gap: 9px;
-            }
-
-            .image-card {
-                border-radius: 9px;
-            }
-        }
-
-        @media (min-width: 1800px) {
-            :root {
-                --sidebar-width: 420px;
-                --sidebar-gap: 20px;
-            }
-
-            .results-wrapper {
-                gap: 8px;
-                padding-left: 16px;
-                padding-right: 16px;
-            }
-
-            .masonry-column,
-            .related-masonry-column {
-                gap: 8px;
-            }
-
-            .image-card {
-                border-radius: 8px;
-            }
-        }
-
-        @media (min-width: 2200px) {
-            :root {
-                --sidebar-width: 440px;
-                --sidebar-gap: 22px;
-            }
-
-            .results-wrapper {
-                padding-left: 14px;
-                padding-right: 14px;
-                gap: 7px;
-            }
-
-            .masonry-column,
-            .related-masonry-column {
-                gap: 7px;
-            }
-
-            .image-card {
-                border-radius: 8px;
-            }
-        }
-
-        @media (min-width: 2600px) {
-            :root {
-                --sidebar-width: 460px;
-                --sidebar-gap: 24px;
-            }
-
-            .results-wrapper {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
-        }
-
-        @media (max-width: 699px) {
-            .results-wrapper {
-                padding: 12px 8px 20px;
-                gap: 8px;
-            }
-
-            .masonry-column,
-            .related-masonry-column {
-                gap: 8px;
-            }
-
-            .image-card {
-                border-radius: 12px;
-            }
-        }
-        /* === FIN AJUSTES WINDOWS / MÓVIL PEDIDOS === */
 
     </style>
 </head>
@@ -2147,108 +1642,6 @@
         }
         window.addEventListener('resize', setParticleCanvasSize);
         setParticleCanvasSize();
-        updateHeaderOffset();
-
-        let responsiveLayoutTimeout = null;
-        let lastLayoutWidth = window.innerWidth;
-        let lastLayoutMode = window.innerWidth >= 1100 ? 'desktop' : 'mobile';
-
-        function updateHeaderOffset() {
-            const logoBar = document.querySelector('.logo-bar');
-            if (!logoBar) return;
-            const height = Math.ceil(logoBar.getBoundingClientRect().height);
-            document.documentElement.style.setProperty('--search-panel-top', `${height}px`);
-        }
-
-        function getResponsiveColumnCount(isRelated = false) {
-            const width = window.innerWidth;
-
-            if (isRelated) {
-                if (width < 700) return 2;
-                if (width < 1100) return 2;
-                if (width < 1500) return 3;
-                if (width < 1900) return 4;
-                if (width < 2500) return 5;
-                return 6;
-            }
-
-            if (width < 700) return 2;
-            if (width < 1100) return 2;
-            if (width < 1500) return 5;
-            if (width < 1900) return 6;
-            if (width < 2300) return 7;
-            if (width < 2700) return 8;
-            if (width < 3200) return 9;
-            return 10;
-        }
-
-        function setupMasonryColumns() {
-            resultsContainer.innerHTML = '';
-            const colCount = getResponsiveColumnCount(false);
-            for (let i = 0; i < colCount; i++) {
-                const col = document.createElement('div');
-                col.className = 'masonry-column';
-                resultsContainer.appendChild(col);
-            }
-        }
-
-        function setupRelatedMasonryColumns() {
-            relatedImagesGrid.innerHTML = '';
-            const colCount = getResponsiveColumnCount(true);
-            for (let i = 0; i < colCount; i++) {
-                const col = document.createElement('div');
-                col.className = 'related-masonry-column';
-                relatedImagesGrid.appendChild(col);
-            }
-        }
-
-        function rebuildMainLayoutFromCache() {
-            if (!allPosts.length || isFetching) return;
-            const snapshot = [...allPosts];
-            const scrollY = window.scrollY;
-            setupMasonryColumns();
-            processImagesSequentially(snapshot).then(() => {
-                window.scrollTo({ top: scrollY, behavior: 'auto' });
-            });
-        }
-
-        function rebuildRelatedLayoutFromCache() {
-            if (!currentRelatedPosts.length || isFetchingRelated || imageModal.style.display !== 'block') return;
-            const snapshot = [...currentRelatedPosts];
-            setupRelatedMasonryColumns();
-            snapshot.forEach((post, index) => {
-                createRelatedImageCard(post, index);
-            });
-        }
-
-        window.addEventListener('resize', () => {
-            clearTimeout(responsiveLayoutTimeout);
-            responsiveLayoutTimeout = setTimeout(() => {
-                const currentWidth = window.innerWidth;
-                const currentMode = currentWidth >= 1100 ? 'desktop' : 'mobile';
-                const widthChangedEnough = Math.abs(currentWidth - lastLayoutWidth) >= 80;
-                const modeChanged = currentMode !== lastLayoutMode;
-                const shouldRebuildLayout = widthChangedEnough || modeChanged;
-
-                lastLayoutWidth = currentWidth;
-                lastLayoutMode = currentMode;
-
-                setParticleCanvasSize();
-                updateHeaderOffset();
-                syncSidebarState();
-
-                // En Android, los cambios de altura por la barra del navegador disparan resize;
-                // solo reconstruimos si cambia de verdad el ancho o la orientación.
-                if (shouldRebuildLayout) {
-                    if (allPosts.length && !isFetching) {
-                        rebuildMainLayoutFromCache();
-                    }
-                    if (currentRelatedPosts.length && imageModal.style.display === 'block' && !isFetchingRelated) {
-                        rebuildRelatedLayoutFromCache();
-                    }
-                }
-            }, 220);
-        });
 
         class Particle {
             constructor() {
@@ -2349,7 +1742,6 @@
         let activeSearchId = null;
         let isAutoLoadEnabled = true;
         let currentTypeFilter = 'all'; 
-        let currentRelatedPosts = [];
 
         // --- SISTEMA DE ANUNCIOS EXTERNOS ---
         const ADSTERRA_AD_URL = 'https://www.effectivecpmnetwork.com/pebktxz1?key=28ccb1c2d5f2bc6691f2610c6b05f11e';
@@ -2402,6 +1794,16 @@
         let currentRelatedSearchTags = '';
 
         // --- FUNCIONES MASONRY JS ---
+        function setupMasonryColumns() {
+            resultsContainer.innerHTML = '';
+            const colCount = 2; // Columnas fijas
+            for (let i = 0; i < colCount; i++) {
+                const col = document.createElement('div');
+                col.className = 'masonry-column';
+                resultsContainer.appendChild(col);
+            }
+        }
+
         function getShortestColumn() {
             const cols = resultsContainer.querySelectorAll('.masonry-column');
             if (cols.length === 0) return null;
@@ -2417,6 +1819,16 @@
         }
 
         // --- FUNCIONES MASONRY PARA IMÁGENES RELACIONADAS ---
+        function setupRelatedMasonryColumns() {
+            relatedImagesGrid.innerHTML = '';
+            const colCount = 2; // Columnas fijas
+            for (let i = 0; i < colCount; i++) {
+                const col = document.createElement('div');
+                col.className = 'related-masonry-column';
+                relatedImagesGrid.appendChild(col);
+            }
+        }
+
         function getShortestRelatedColumn() {
             const cols = relatedImagesGrid.querySelectorAll('.related-masonry-column');
             if (cols.length === 0) return null;
@@ -2432,47 +1844,7 @@
         }
         // ------------------------------
 
-        function ensureModalDesktopLayout() {
-            const modalContent = document.querySelector('.modal-content');
-            if (!modalContent || document.getElementById('modalDesktopLayout')) return;
-            if (!modalMediaContainer || !tagsSection || !relatedImagesSection) return;
-
-            const mediaWrap = document.createElement('div');
-            mediaWrap.className = 'modal-desktop-media';
-            mediaWrap.id = 'modalDesktopMedia';
-
-            const sidebar = document.createElement('div');
-            sidebar.className = 'modal-desktop-sidebar';
-            sidebar.id = 'modalDesktopLayout';
-
-            modalContent.insertBefore(mediaWrap, modalMediaContainer);
-            mediaWrap.appendChild(modalMediaContainer);
-            sidebar.appendChild(tagsSection);
-            sidebar.appendChild(relatedImagesSection);
-            modalContent.appendChild(sidebar);
-        }
-
-        function syncSidebarState() {
-            const isDesktop = window.innerWidth >= 1100;
-            if (isDesktop) {
-                isSearchVisible = true;
-                document.body.classList.add('sidebar-open');
-                searchFiltersPanel.classList.add('visible');
-                searchToggleBtn.style.display = 'none';
-            } else {
-                document.body.classList.remove('sidebar-open');
-                searchToggleBtn.style.display = '';
-                searchFiltersPanel.classList.toggle('visible', isSearchVisible);
-            }
-            searchToggleBtn.title = isDesktop ? 'Menú lateral activo' : (isSearchVisible ? 'Ocultar buscador' : 'Mostrar buscador');
-        }
-
         function toggleSearchVisibility() {
-            if (window.innerWidth >= 1100) {
-                isSearchVisible = true;
-                syncSidebarState();
-                return;
-            }
             isSearchVisible = !isSearchVisible;
             if (isSearchVisible) {
                 searchFiltersPanel.classList.add('visible');
@@ -2480,12 +1852,9 @@
             } else {
                 searchFiltersPanel.classList.remove('visible');
             }
-            syncSidebarState();
         }
 
         function closeSearchOnClickOutside(event) {
-
-            if (window.innerWidth >= 1100) return;
             if (isSearchVisible && 
                 !searchFiltersPanel.contains(event.target) && 
                 !searchToggleBtn.contains(event.target)) {
@@ -2632,7 +2001,6 @@
             isFetchingRelated = false;
             endOfRelatedResults = false;
             currentRelatedSearchTags = '';
-            currentRelatedPosts = [];
 
             if (!tagsString) {
                 relatedImagesGrid.innerHTML = '<div style="color:#aaa; text-align:center; flex:1; padding: 15px;">No hay datos para relacionar.</div>';
@@ -2752,7 +2120,6 @@
                     relatedImagesGrid.innerHTML = '<div style="color:#aaa; text-align:center; flex:1; padding: 15px;">No se encontraron relacionados.</div>';
                 }
             } else {
-                currentRelatedPosts.push(...relatedPosts);
                 for (let i = 0; i < relatedPosts.length; i++) {
                     await createRelatedImageCard(relatedPosts[i], i);
                     await new Promise(resolve => setTimeout(resolve, 20)); 
@@ -2927,7 +2294,6 @@
             modalMediaContainer.appendChild(mediaElement);
             imageModal.style.display = 'block';
             document.body.style.overflow = 'hidden';
-            document.body.classList.add('modal-open');
             
             translatingStatus.style.display = 'none';
             translatedStatus.style.display = 'none';
@@ -2949,7 +2315,6 @@
 
             imageModal.style.display = 'none';
             document.body.style.overflow = 'auto';
-            document.body.classList.remove('modal-open');
             currentImageData = null;
             currentImageTags = [];
             isTranslating = false;
@@ -2992,6 +2357,9 @@
             if (combinedItems.length > 0) {
                 allPosts = [...allPosts, ...combinedItems];
                 await processImagesSequentially(combinedItems);
+                setTimeout(() => {
+                    if (isNearBottom() && !isFetching && !endOfAllResults) loadMoreImages();
+                }, 1000);
             } else {
                 endOfAllResults = true;
                 noMoreResults.classList.add('visible');
@@ -3134,6 +2502,12 @@
             if (combinedItems.length > 0 && activeSearchId === searchId) {
                 allPosts = [...allPosts, ...combinedItems];
                 await processImagesSequentially(combinedItems);
+                
+                setTimeout(() => {
+                    if (!endOfAllResults && activeSearchId === searchId) {
+                        if (isNearBottom()) loadMoreImages();
+                    }
+                }, 500);
             } else if (isNewSearch && activeSearchId === searchId) {
                 resultsContainer.innerHTML = '<p style="width: 100%; text-align: center; color: #aaa; padding: 40px 0;">No se encontró nada reciente.</p>';
             }
@@ -3212,7 +2586,7 @@
         window.addEventListener('scroll', () => {
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
-                if (!isFetching && !endOfAllResults && isAutoLoadEnabled && isNearBottom() && !isLoadingMore) loadMoreImages();
+                if (!isFetching && !endOfAllResults && isAutoLoadEnabled && isNearBottom()) loadMoreImages();
             }, 200);
         });
 
@@ -3237,12 +2611,6 @@
                 aiFilterToggle.checked = true;
             }
 
-            ensureModalDesktopLayout();
-            if (window.innerWidth >= 1100) {
-                isSearchVisible = true;
-                searchFiltersPanel.classList.add('visible');
-            }
-            syncSidebarState();
             startSearch(''); 
         });
     </script>
