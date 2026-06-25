@@ -1777,10 +1777,17 @@
             width: calc(100% - 330px);
             padding: 18px 18px 26px;
             gap: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            flex-wrap: nowrap;
         }
 
         body.desktop-mode .masonry-column {
             gap: 10px;
+            flex: 0 0 calc((100% - 40px) / 5);
+            max-width: calc((100% - 40px) / 5);
+            min-width: 0;
         }
 
         body.desktop-mode .image-card {
@@ -1799,7 +1806,7 @@
         }
 
         body.desktop-mode .modal-content {
-            width: min(1300px, calc(100vw - 360px));
+            width: min(1400px, calc(100vw - 360px));
             padding-top: 74px;
         }
 
@@ -1810,10 +1817,17 @@
 
         body.desktop-mode .related-grid {
             gap: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            flex-wrap: nowrap;
         }
 
         body.desktop-mode .related-masonry-column {
             gap: 10px;
+            flex: 0 0 calc((100% - 40px) / 5);
+            max-width: calc((100% - 40px) / 5);
+            min-width: 0;
         }
 
         body.desktop-mode .related-images-section .image-card {
