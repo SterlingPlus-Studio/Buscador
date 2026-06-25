@@ -1058,7 +1058,7 @@
             }
 
             .masonry-column {
-                gap: 10px;
+                gap: 6px;
             }
 
             .image-card {
@@ -1532,7 +1532,192 @@
         }
         /* === FIN AJUSTE FINAL SOLICITADO === */
 
-    </style>
+    
+        /* === AJUSTE DE PANTALLA GRANDE: MENÚ IZQUIERDO FIJO Y GALERÍA MÁS COMPACTA === */
+        @media (min-width: 1024px) {
+            .logo-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 320px;
+                height: 68px;
+                z-index: 120;
+                padding: 14px 16px;
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .search-toggle-btn {
+                display: none !important;
+            }
+
+            .search-filters-panel {
+                position: fixed;
+                top: 68px;
+                left: 0;
+                width: 320px;
+                height: calc(100vh - 68px);
+                max-height: none !important;
+                opacity: 1 !important;
+                overflow-y: auto;
+                overflow-x: hidden;
+                z-index: 115;
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+                border-bottom: none;
+            }
+
+            .search-filters-panel.visible {
+                max-height: none !important;
+                opacity: 1 !important;
+            }
+
+            .search-filters-content {
+                padding: 14px;
+            }
+
+            .results-wrapper {
+                margin-left: 320px;
+                width: calc(100% - 320px);
+                max-width: none;
+                padding: 92px 18px 28px;
+                gap: 16px;
+            }
+
+            #scrollLoading,
+            .load-more-indicator,
+            .no-more-results {
+                margin-left: 320px;
+                width: calc(100% - 320px);
+            }
+
+            .image-card {
+                border-radius: 16px;
+            }
+
+            .type-badge {
+                font-size: 9px;
+                padding: 3px 7px;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .results-wrapper {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        @media (min-width: 1500px) {
+            .logo-bar {
+                width: 340px;
+            }
+
+            .search-filters-panel {
+                width: 340px;
+            }
+
+            .results-wrapper,
+            #scrollLoading,
+            .load-more-indicator,
+            .no-more-results {
+                margin-left: 340px;
+                width: calc(100% - 340px);
+            }
+        }
+        /* === FIN AJUSTE DE PANTALLA GRANDE === */
+
+    
+
+        /* === AJUSTE PC / ANDROID SOLICITADO === */
+        @media (min-width: 1024px) {
+            .search-filters-panel {
+                top: 64px;
+                left: 0;
+                width: 330px;
+                height: calc(100vh - 64px);
+                max-height: none !important;
+                opacity: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
+                border-right: 1px solid rgba(255, 255, 255, 0.06);
+                border-bottom: none;
+            }
+
+            .search-filters-panel.visible {
+                max-height: none !important;
+            }
+
+            .search-filters-content {
+                padding: 16px 14px 18px;
+            }
+
+            .results-wrapper {
+                margin-left: 330px;
+                width: calc(100% - 330px);
+                max-width: none;
+                padding: 18px 12px 24px;
+                gap: 8px;
+            }
+
+            .masonry-column {
+                gap: 8px;
+            }
+
+            .image-card {
+                border-radius: 14px;
+            }
+
+            .type-filters {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .type-btn {
+                width: 100%;
+                min-width: 0;
+                padding: 10px 8px;
+                font-size: 12px;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+
+            .search-box-container {
+                padding: 16px;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .search-filters-panel {
+                width: 340px;
+            }
+
+            .results-wrapper {
+                margin-left: 340px;
+                width: calc(100% - 340px);
+                padding: 20px 10px 28px;
+                gap: 6px;
+            }
+
+            .masonry-column {
+                gap: 8px;
+            }
+
+            .related-grid {
+                gap: 6px;
+            }
+
+            .related-masonry-column {
+                gap: 6px;
+            }
+
+            .modal-content {
+                width: min(1240px, 100%);
+            }
+        }
+        /* === FIN AJUSTE PC / ANDROID SOLICITADO === */
+
+</style>
 </head>
 <body>
     <canvas id="particleCanvas"></canvas>
@@ -1642,6 +1827,11 @@
         }
         window.addEventListener('resize', setParticleCanvasSize);
         setParticleCanvasSize();
+
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeRerenderTimeout);
+            resizeRerenderTimeout = setTimeout(applyResponsiveLayout, 150);
+        });
 
         class Particle {
             constructor() {
@@ -1794,10 +1984,25 @@
         let currentRelatedSearchTags = '';
 
         // --- FUNCIONES MASONRY JS ---
+        let currentMainColumnCount = 0;
+        let currentRelatedColumnCount = 0;
+        let resizeRerenderTimeout = null;
+        let lastLayoutIsDesktop = null;
+
+        function getMainColumnCount() {
+            if (window.innerWidth >= 1200) return 5;
+            return 2;
+        }
+
+        function getRelatedColumnCount() {
+            if (window.innerWidth >= 1200) return 5;
+            return 2;
+        }
+
         function setupMasonryColumns() {
             resultsContainer.innerHTML = '';
-            const colCount = 2; // Columnas fijas
-            for (let i = 0; i < colCount; i++) {
+            currentMainColumnCount = getMainColumnCount();
+            for (let i = 0; i < currentMainColumnCount; i++) {
                 const col = document.createElement('div');
                 col.className = 'masonry-column';
                 resultsContainer.appendChild(col);
@@ -1821,8 +2026,8 @@
         // --- FUNCIONES MASONRY PARA IMÁGENES RELACIONADAS ---
         function setupRelatedMasonryColumns() {
             relatedImagesGrid.innerHTML = '';
-            const colCount = 2; // Columnas fijas
-            for (let i = 0; i < colCount; i++) {
+            currentRelatedColumnCount = getRelatedColumnCount();
+            for (let i = 0; i < currentRelatedColumnCount; i++) {
                 const col = document.createElement('div');
                 col.className = 'related-masonry-column';
                 relatedImagesGrid.appendChild(col);
@@ -1844,7 +2049,47 @@
         }
         // ------------------------------
 
+        async function rerenderMainGallery() {
+            if (!allPosts.length) return;
+            setupMasonryColumns();
+            await processImagesSequentially(allPosts);
+        }
+
+        function applyResponsiveLayout() {
+            const desktop = window.innerWidth >= 1024;
+            const layoutChanged = lastLayoutIsDesktop === null || desktop !== lastLayoutIsDesktop;
+
+            if (layoutChanged) {
+                if (desktop) {
+                    searchFiltersPanel.classList.add('visible');
+                    isSearchVisible = true;
+                    searchToggleBtn.style.display = 'none';
+                } else {
+                    searchToggleBtn.style.display = '';
+                    searchFiltersPanel.classList.remove('visible');
+                    isSearchVisible = false;
+                }
+                lastLayoutIsDesktop = desktop;
+            } else {
+                searchToggleBtn.style.display = desktop ? 'none' : '';
+            }
+
+            const newCount = getMainColumnCount();
+            if (newCount !== currentMainColumnCount && allPosts.length && !isFetching) {
+                clearTimeout(resizeRerenderTimeout);
+                resizeRerenderTimeout = setTimeout(() => {
+                    if (!isFetching) rerenderMainGallery();
+                }, 120);
+            }
+        }
+
         function toggleSearchVisibility() {
+            if (window.innerWidth >= 1024) {
+                searchFiltersPanel.classList.add('visible');
+                isSearchVisible = true;
+                return;
+            }
+
             isSearchVisible = !isSearchVisible;
             if (isSearchVisible) {
                 searchFiltersPanel.classList.add('visible');
@@ -1855,6 +2100,7 @@
         }
 
         function closeSearchOnClickOutside(event) {
+            if (window.innerWidth >= 1024) return;
             if (isSearchVisible && 
                 !searchFiltersPanel.contains(event.target) && 
                 !searchToggleBtn.contains(event.target)) {
@@ -2582,6 +2828,13 @@
             }
         });
 
+        searchInput.addEventListener('focus', () => {
+            if (window.innerWidth < 1024) {
+                searchFiltersPanel.classList.add('visible');
+                isSearchVisible = true;
+            }
+        });
+
         let scrollTimeout;
         window.addEventListener('scroll', () => {
             clearTimeout(scrollTimeout);
@@ -2605,12 +2858,13 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadSavedTags();
-            
+
             const savedAIFilter = localStorage.getItem('noxesphare_ai_filter');
             if (savedAIFilter === 'true') {
                 aiFilterToggle.checked = true;
             }
 
+            applyResponsiveLayout();
             startSearch(''); 
         });
     </script>
