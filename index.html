@@ -1717,7 +1717,116 @@
         }
         /* === FIN AJUSTE PC / ANDROID SOLICITADO === */
 
-</style>
+
+        /* ===== AJUSTE FINAL PARA ESCRITORIO: 5 COLUMNAS Y MENÚ IZQUIERDO ===== */
+        body.desktop-mode {
+            overflow-x: hidden;
+        }
+
+        body.desktop-mode .search-toggle-btn {
+            display: none !important;
+        }
+
+        body.desktop-mode .search-filters-panel {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            width: 330px;
+            height: calc(100vh - 64px);
+            max-height: none !important;
+            opacity: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 120;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            border-bottom: none;
+            box-shadow: 14px 0 40px rgba(0, 0, 0, 0.35);
+            transform: none !important;
+        }
+
+        body.desktop-mode .search-filters-content {
+            padding: 16px 14px 18px;
+        }
+
+        body.desktop-mode .type-filters {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        body.desktop-mode .type-btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 0;
+            padding: 10px 12px;
+        }
+
+        body.desktop-mode .search-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        body.desktop-mode .option {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 0;
+            text-align: center;
+        }
+
+        body.desktop-mode .results-wrapper {
+            margin-left: 330px;
+            max-width: none;
+            width: calc(100% - 330px);
+            padding: 18px 18px 26px;
+            gap: 10px;
+        }
+
+        body.desktop-mode .masonry-column {
+            gap: 10px;
+        }
+
+        body.desktop-mode .image-card {
+            border-radius: 16px;
+        }
+
+        body.desktop-mode #scrollLoading,
+        body.desktop-mode .load-more-indicator,
+        body.desktop-mode .no-more-results {
+            margin-left: 330px;
+            width: calc(100% - 330px);
+        }
+
+        body.desktop-mode .image-modal {
+            padding-left: 348px;
+        }
+
+        body.desktop-mode .modal-content {
+            width: min(1300px, calc(100vw - 360px));
+            padding-top: 74px;
+        }
+
+        body.desktop-mode .related-images-section,
+        body.desktop-mode .tags-section {
+            max-width: 100%;
+        }
+
+        body.desktop-mode .related-grid {
+            gap: 10px;
+        }
+
+        body.desktop-mode .related-masonry-column {
+            gap: 10px;
+        }
+
+        body.desktop-mode .related-images-section .image-card {
+            border-radius: 16px;
+        }
+
+        body.desktop-mode .modal-image,
+        body.desktop-mode .modal-video {
+            max-height: 68vh;
+        }
+        /* ===== FIN AJUSTE FINAL PARA ESCRITORIO ===== */
+
+    </style>
 </head>
 <body>
     <canvas id="particleCanvas"></canvas>
@@ -1989,14 +2098,16 @@
         let resizeRerenderTimeout = null;
         let lastLayoutIsDesktop = null;
 
+        function isDesktopDevice() {
+            return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        }
+
         function getMainColumnCount() {
-            if (window.innerWidth >= 1200) return 5;
-            return 2;
+            return isDesktopDevice() ? 5 : 2;
         }
 
         function getRelatedColumnCount() {
-            if (window.innerWidth >= 1200) return 5;
-            return 2;
+            return isDesktopDevice() ? 5 : 2;
         }
 
         function setupMasonryColumns() {
@@ -2056,7 +2167,7 @@
         }
 
         function applyResponsiveLayout() {
-            const desktop = window.innerWidth >= 1024;
+            const desktop = isDesktopDevice();
             const layoutChanged = lastLayoutIsDesktop === null || desktop !== lastLayoutIsDesktop;
 
             if (layoutChanged) {
@@ -2064,14 +2175,17 @@
                     searchFiltersPanel.classList.add('visible');
                     isSearchVisible = true;
                     searchToggleBtn.style.display = 'none';
+                    document.body.classList.add('desktop-mode');
                 } else {
                     searchToggleBtn.style.display = '';
                     searchFiltersPanel.classList.remove('visible');
                     isSearchVisible = false;
+                    document.body.classList.remove('desktop-mode');
                 }
                 lastLayoutIsDesktop = desktop;
             } else {
                 searchToggleBtn.style.display = desktop ? 'none' : '';
+                document.body.classList.toggle('desktop-mode', desktop);
             }
 
             const newCount = getMainColumnCount();
@@ -2084,7 +2198,7 @@
         }
 
         function toggleSearchVisibility() {
-            if (window.innerWidth >= 1024) {
+            if (isDesktopDevice()) {
                 searchFiltersPanel.classList.add('visible');
                 isSearchVisible = true;
                 return;
@@ -2100,7 +2214,7 @@
         }
 
         function closeSearchOnClickOutside(event) {
-            if (window.innerWidth >= 1024) return;
+            if (isDesktopDevice()) return;
             if (isSearchVisible && 
                 !searchFiltersPanel.contains(event.target) && 
                 !searchToggleBtn.contains(event.target)) {
@@ -2829,7 +2943,7 @@
         });
 
         searchInput.addEventListener('focus', () => {
-            if (window.innerWidth < 1024) {
+            if (!isDesktopDevice()) {
                 searchFiltersPanel.classList.add('visible');
                 isSearchVisible = true;
             }
